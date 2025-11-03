@@ -96,8 +96,17 @@ async def play_command(interaction: discord.Interaction, url: str):
         # Streaming audio source from the extracted URL
         source = discord.FFmpegOpusAudio(audio_url, **FFMPEG_OPTIONS)
         
+        # Callback function for when the song finishes
+        async def after_playing(error):
+            if error:
+                print(f'Player error: {error}')
+            else:
+                # Send a message to the channel that the song has finished
+                channel = interaction.channel
+                await channel.send(f"**End of Playback**")
+
         # Playing the audio source
-        vc.play(source, after=lambda e: print(f'Player error: {e}') if e else None)
+        vc.play(source, after=lambda e: asyncio.run_coroutine_threadsafe(after_playing(e), bot.loop))
         await interaction.followup.send(f"**Now Playing:** `{title} by {artist}`")
 
     except Exception as e:
@@ -110,7 +119,7 @@ async def stop_command(interaction: discord.Interaction):
     vc = interaction.guild.voice_client
     if vc is None or not vc.is_connected():
         return await interaction.response.send_message("I'm not connected to any voice channel!")
-
+    
     await vc.disconnect()
     await interaction.response.send_message("Disconnected from the voice channel and stopped playing music.")
 
