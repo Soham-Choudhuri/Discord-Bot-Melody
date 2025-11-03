@@ -86,6 +86,9 @@ async def play_command(interaction: discord.Interaction, url: str):
             audio_url = info['url'] 
             title = info.get('title', 'Unknown Title')
             artist = info.get('uploader', 'Unknown Artist')
+            #looped_audio_url = audio_url  # Store the original audio URL for looping
+            #looped_title = title # Store the original title for looping
+            #looped_artist = artist # Store the original artist for looping
 
     except Exception as e:
         print(f"YTDL Error: {e}")
@@ -113,7 +116,7 @@ async def play_command(interaction: discord.Interaction, url: str):
         print(f"Playback Error: {e}")
         await interaction.followup.send(f"A playback error occurred: `{e}`")
 
-# Music Stop Command
+# 2. Music Stop Command
 @bot.tree.command(name="stop", description="Stops the music and leaves the voice channel.")
 async def stop_command(interaction: discord.Interaction):
     vc = interaction.guild.voice_client
